@@ -1,13 +1,13 @@
 import './App.css';
-import { Header } from'./components/header';
-import {GameSizes} from './pages/home'
+import Header from'./components/header';
+import Home from './pages/home'
 
 function App() {
   return (
     <>
-      <Header/>
+      <Header></Header>
       <main className="main">
-        <GameSizes/>
+        <Home/>
       </main>
     </>
   );

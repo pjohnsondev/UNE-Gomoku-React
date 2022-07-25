@@ -13,16 +13,3 @@ body {
   display: flex;
   flex-direction: column;
 }
-
-
-/* Game size selection menu begins here */
-
-.game-sizes {
-  position: relative;
-  font-size: 14px;
-  display: flex;
-}
-
-.game-size {
-  /* display: none; */
-}
