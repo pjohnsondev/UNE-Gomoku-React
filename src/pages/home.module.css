@@ -12,8 +12,8 @@
 
 .game-size {
     height: 1.5rem;
-    width: auto;
-    align-self: center;
+    width: 80%;
+    align-items: right;
     display: flex;
     list-style: none;
     background-color: #3d3afb;
@@ -26,4 +26,5 @@
 a { 
     color: inherit; 
     text-decoration: none;
+    align-self: center;
 } 
