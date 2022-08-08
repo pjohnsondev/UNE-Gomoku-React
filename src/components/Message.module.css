@@ -1,0 +1,25 @@
+.message{
+    width: 100%;
+    padding: .5rem;
+    box-sizing: border-box;
+    font-weight: 100;
+    border-radius: .5rem;
+    color: white;
+    font-weight: 500;
+}
+
+.info{
+    background-color: aqua;
+}
+
+.warning{
+    background-color: orange;
+}
+
+.error{
+    background-color: red;
+}
+
+.success{
+    background-color: green;
+}

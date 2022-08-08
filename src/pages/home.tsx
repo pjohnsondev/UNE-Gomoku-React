@@ -1,4 +1,4 @@
-import style from "./home.module.css"
+import styles from "./Home.module.css"
 import React, {useState} from "react" 
 import { CSSTransition } from "react-transition-group"
 import { Button } from 'semantic-ui-react'
@@ -22,7 +22,7 @@ export default function Home(props: any) {
     function GameSize(props: any){
       return(
         <CSSTransition in={open === true } unmountOnExit timeout={500}> 
-        <li className={style['game-size']} key={props.gameSize} onClick={() => selected? setSelected(!selected) : gameChoice = props.gameSize}>
+        <li className={styles['game-size']} key={props.gameSize} onClick={() => selected? setSelected(!selected) : gameChoice = props.gameSize}>
           <a href="#">
             <span>{props.gameSize}x{props.gameSize}</span>
           </a>
@@ -34,7 +34,7 @@ export default function Home(props: any) {
     function GameSizes(){
       return (
         <div /*onClick={() => setOpen(!open)}*/>
-          <ul className={style['game-sizes']}> 
+          <ul className={styles['game-sizes']}> 
             <span>Select Game Size</span>
             {gameSizes.map((size) => (
               <GameSize gameSize = {size} key={size}/> 
