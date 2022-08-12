@@ -1,5 +1,34 @@
 [
     {
-        
+        "id": 1,
+        "boardSize": 9,
+        "winner": "black",
+        "date": "2022-03-12",
+        "moves": [22,16,23,1,2,44]
+
+    },
+    {
+        "id": 2,
+        "boardSize": 9,
+        "winner": "black",
+        "date": "2022-03-12",
+        "moves": [22,16,23,1,2,44]
+
+    },
+    {
+        "id": 3,
+        "boardSize": 9,
+        "winner": "black",
+        "date": "2022-03-12",
+        "moves": [22,16,23,1,2,44]
+
+    },
+    {
+        "id": 4,
+        "boardSize": 9,
+        "winner": "black",
+        "date": "2022-03-12",
+        "moves": [22,16,23,1,2,44]
+
     }
 ]

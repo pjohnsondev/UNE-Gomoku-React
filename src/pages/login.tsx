@@ -1,20 +1,26 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "semantic-ui-react"
-import Input from "../components/Input"
-import Message from "../components/Message"
+import { Input, Message } from "../components"
+import { UserContext  } from "../context"
 import users from "../data/dummyUserData.json"  
 
 export default function Login() {
+    const { login } = useContext(UserContext)
+    const Navigate = useNavigate()
     const [username, setUser] = useState('')
     const [password, setPassword] = useState('')
     const [credentialsInvalid, setCredentialsInvalid] =  useState(false )
 
-    const login = () => {
-        const user = users.find((u) => u.username === username && u.password === password)
+    const handleLogin = () => {
+        const user = users.find(
+            (u) => u.username === username && u.password === password
+        )
         if(!user){
             setCredentialsInvalid(true)
         } else { 
-            console.log("Login successful")
+            login(username)
+            Navigate("/")
         }
 
     }
@@ -22,7 +28,7 @@ export default function Login() {
     return(
         <form className="login" onSubmit={(e) => {
             e.preventDefault() 
-            login()
+            handleLogin()
             }}> 
             {credentialsInvalid && <Message variant="error" message="Invalid username or password"/>}
             <Input 

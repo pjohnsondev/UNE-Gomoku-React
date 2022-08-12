@@ -2,13 +2,13 @@ import { useParams } from "react-router-dom";
 import games from "../data/gameDetail.json"
 
 export default function GameLog(){
-    const { gameID } = useParams()
-    if(!gameID) return null
+    const { id } = useParams()
+    if(!id) return null
 
-    const game = games.find((g) => g.id === parseInt(gameID))
-    if(!game) return null
+    const game = games.find((g) => g.id === parseInt(id))
+    if(!game) return <div>fail</div>
     return(
-        <div> {game.boardSize} </div>
+        <div> {game.boardSize} fail</div>
     )
 }
 export{}

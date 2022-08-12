@@ -45,7 +45,9 @@ export default function Home(props: any) {
   return (
     <>
       <GameSizes/>
-      <Button primary onClick={() => navigate(``)}>{buttonText}</Button>
+
+      {/* create param equal to selected game size */}
+      <Button primary onClick={() => navigate(`/game/${gameChoice}`)}>{buttonText}</Button>
     </>
 
   )

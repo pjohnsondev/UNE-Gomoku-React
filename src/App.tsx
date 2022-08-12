@@ -4,26 +4,26 @@ import {
   Navigate
 } from "react-router-dom";
 import './App.css';
-import Header from'./components/Header';
+import {Header, UserProvider } from'./components';
 import { Home, Login, SignUp, Game, GameLog, History } from './pages'
 
 function App() {
   return (
-    <>
+    <UserProvider>
       <Header></Header>
       <main className="main">
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/sign-up" element={<SignUp/>} />
-          {/* <Route path="/game/:gameId" element={<Game />} />  */}
-          <Route path="/game-log/:gameID" element={<GameLog/>} /> 
-          <Route path="/game-history" element={<History/>} />
+          <Route path="/game/:gameSize" element={<Game />} /> 
+          <Route path="/game-log/:id" element={<GameLog/>} /> 
+          <Route path="/games" element={<History/>} />
           <Route path="*"element={<Navigate to="/" replace />} />
 
         </Routes>
       </main>
-    </>
+    </UserProvider>
   );
 }
 
