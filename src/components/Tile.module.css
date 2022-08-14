@@ -1,0 +1,7 @@
+.tile{
+    /* border-radius: .25rem; */
+    height: 2rem;
+    width: 2rem;
+    background-color: #ffc98a;
+    box-sizing: border-box;
+}

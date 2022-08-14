@@ -177,6 +177,47 @@
 //         }
 //     }
 // }
+import { useState, useContext } from "react"
+import { PLAYER } from "../constants"
+import { UserContext } from "../context"
+import Stone from "./Stone"
+import styles from "./Tile.module.css"
 
+type TileProps = {
+    id: number
+}
 
-export {}
+export default function Tile(props: TileProps) {
+    const { id } = props
+    const { player, changeColor } = useContext(UserContext)
+    const [ stone, setStone ] = useState(PLAYER.NONE)
+
+    const getClassNames = () => {
+        console.log(stone)
+        if(stone === PLAYER.NONE){
+            return <Stone player={PLAYER.NONE}/>
+        } else {
+            switch(stone){
+                case PLAYER.BLACK:
+                    return <Stone player={PLAYER.BLACK}/>
+                case PLAYER.WHITE:
+                    return <Stone player={PLAYER.WHITE}/>
+            }
+        }
+    }
+
+    const handleClick = () => {
+        if(player === PLAYER.WHITE){
+            if(stone === PLAYER.NONE){
+                setStone(player)
+            }
+            changeColor(PLAYER.BLACK)
+        } else {
+            if(stone === PLAYER.NONE)
+                setStone(PLAYER.BLACK)
+            changeColor(PLAYER.WHITE)
+        }
+    }
+    
+    return <div id={id.toString()} className={styles.tile} onClick={handleClick}>{getClassNames()}</div>
+}
