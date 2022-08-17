@@ -14,12 +14,12 @@ export default function GameItem(props: GameProps){
     return(
         <div className={styles.gameInfo}>
             <span>Game #{id} @{date} Winner:{winner}</span>
-            <button className={styles.button} onClick={() => navigate(`game-log/${id}`)}>
+            <button className={styles.button} onClick={() => navigate(`/game-log/${id}`)}>
                 View game log
             </button>
         </div>
     )
     
-
+   
 }
 // export{}

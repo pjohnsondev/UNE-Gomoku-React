@@ -185,15 +185,15 @@ import styles from "./Tile.module.css"
 
 type TileProps = {
     id: number
+    onSelect: () => void
 }
 
 export default function Tile(props: TileProps) {
-    const { id } = props
+    const { id, onSelect} = props
     const { player, changeColor } = useContext(UserContext)
     const [ stone, setStone ] = useState(PLAYER.NONE)
 
     const getClassNames = () => {
-        console.log(stone)
         if(stone === PLAYER.NONE){
             return <Stone player={PLAYER.NONE}/>
         } else {
@@ -210,11 +210,14 @@ export default function Tile(props: TileProps) {
         if(player === PLAYER.WHITE){
             if(stone === PLAYER.NONE){
                 setStone(player)
+                onSelect()
+                
             }
             changeColor(PLAYER.BLACK)
         } else {
             if(stone === PLAYER.NONE)
                 setStone(PLAYER.BLACK)
+                onSelect()
             changeColor(PLAYER.WHITE)
         }
     }

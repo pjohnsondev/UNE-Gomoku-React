@@ -1,0 +1,40 @@
+.container {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gameBoard {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    max-width: 1000px;
+    margin: 0 auto;
+    row-gap: .1rem;
+    margin: 1rem
+}
+
+.tiles {
+    display: grid;
+    gap: .1rem;
+}
+
+.controls{
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    max-width: 1000px;
+    align-items: center;
+}
+
+button{
+    min-width: 60px;
+    margin: .5rem
+}
+
+.message {
+
+}

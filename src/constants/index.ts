@@ -4,8 +4,7 @@ export enum PLAYER {
     BLACK = "BLACK"
 }
 
-export enum STONE {
-    NONE = "NONE",
-    WHITE = "WHITE",
-    BLACK = "BLACK"
+export enum TileSelectionType {
+    SELECT = "SELECT",
+    NONE = "NONE"
 }

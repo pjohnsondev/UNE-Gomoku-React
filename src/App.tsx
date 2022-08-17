@@ -16,7 +16,8 @@ function App() {
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/sign-up" element={<SignUp/>} />
-          <Route path="/game/:gameSize" element={<Game />} /> 
+          {/* pass gameSize params to Game element */}
+          <Route path="/game/:gameChoice" element={<Game />} /> 
           <Route path="/game-log/:id" element={<GameLog/>} /> 
           <Route path="/games" element={<History/>} />
           <Route path="*"element={<Navigate to="/" replace />} />

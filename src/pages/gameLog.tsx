@@ -8,7 +8,7 @@ export default function GameLog(){
     const game = games.find((g) => g.id === parseInt(id))
     if(!game) return <div>fail</div>
     return(
-        <div> {game.boardSize} fail</div>
+        <div> {game.boardSize}</div>
     )
-}
+} 
 export{}
