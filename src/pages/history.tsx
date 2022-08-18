@@ -7,6 +7,7 @@ import { UserContext } from "../context";
 
 export default function History(){
     const { user } = useContext(UserContext)
+    // const [ gamesHistory ] = useContext<Record<string, number[]>>()
 
     if(!user) return <Navigate to='/login'/>
     return(

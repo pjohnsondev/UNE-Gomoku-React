@@ -1,8 +1,7 @@
 import { useState } from "react"
-import { Player, User } from "../types"
+import { User } from "../types"
 import { UserContext } from "../context"
 import { PLAYER } from "../constants"
-import { EnumType } from "typescript"
 
 type UserProviderProps = {
     children: React.ReactNode
