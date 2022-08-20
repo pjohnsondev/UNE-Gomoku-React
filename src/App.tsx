@@ -16,13 +16,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
-          <Route path="/sign-up" element={<SignUp/>} />
-          {/* pass gameSize params to Game element */}
+          {/* <Route path="/sign-up" element={<SignUp/>} /> */}
           <Route path="/game/:gameChoice" element={<GameBoard />} /> 
           <Route path="/game-log/:id" element={<GameLog/>} /> 
           <Route path="/games" element={<History/>} />
           <Route path="*"element={<Navigate to="/" replace />} />
-
         </Routes>
       </main>
     </UserProvider>

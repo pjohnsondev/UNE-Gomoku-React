@@ -6,5 +6,10 @@ export enum PLAYER {
 
 export enum TileSelectionType {
     SELECT = "SELECT",
-    NONE = "NONE"
+    CLEAR = "CLEAR"
+}
+
+export enum GAMESTATUS {
+    ACTIVE = "AcTIVE",
+    COMPLETE = "COMPLETE"
 }

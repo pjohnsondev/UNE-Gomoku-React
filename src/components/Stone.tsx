@@ -15,10 +15,15 @@ import styles from "./Stone.module.css"
 
 type StoneProps = {
     player: PLAYER
+    move?: number
 }
 
 export default function Stone(props: StoneProps){
-    const { player } = props
+    const { player, move } = props
+
+    const hasMove = () => {
+            return move
+    }
 
     const getClassName = () => {
         const className = styles.stone
@@ -32,6 +37,6 @@ export default function Stone(props: StoneProps){
         }
     }
     return(
-        <div className={getClassName()}></div>
+        <div className={getClassName()}>{hasMove()}</div>
     )
 }

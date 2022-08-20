@@ -1,13 +1,9 @@
-// Possibly store details as array instead of object if necessary and while loop !== typofe string
-
-import { useContext, useReducer, useState } from "react";
-import { Navigate, useParams  } from "react-router-dom";
+import { useContext, useReducer } from "react";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../context";
-import { PLAYER, TileSelectionType  } from "../constants";
-import games from "../data/gameLog.json"
+import { GAMESTATUS, PLAYER, TileSelectionType  } from "../constants";
 import Tile from "../components/Tile";
 import styles from "./Game.module.css"
-import { Game } from "../types";
 import { useLocalStorage } from "../hooks";
 
 type TileSelection = {
@@ -26,51 +22,44 @@ function tileSelectionReducer(state: number[], action: TileSelection){
     }
 }
 
-function completeGame(){
-
+function completeGame(id: number, boardSize: string, winner: PLAYER, date: Date, moves: number[]){
+    const game = 
+    {
+        id: id,
+        boardSize: boardSize,
+        winner: winner,
+        date: date,
+        moves: moves
+    }
+    return game
 }
-
-const game1 = {
-    id: 2,
-    boardSize: 9,
-    winner: "Black",
-    date: "17 August 2022",
-    moves: [4,1,9,10,3]
-}
-
-
 
 export default function GameBoard(){
     const { gameChoice } = useParams()
+    const navigate = useNavigate()
     const { user } = useContext(UserContext)
-    const {player, changeColor } = useContext(UserContext)
-    const game = Object.keys(games).length + 1
-    const [localGames, saveGame] = useLocalStorage<Record<string, number[]>>(
+    const {player= PLAYER.BLACK, changeColor } = useContext(UserContext)
+    const [localGames, saveGame] = useLocalStorage<object>(
         'games',
         {}
     )
-    const selectedTiles = localGames[`Game-${game}`] || []
-    const [state, dispatch] = useReducer(tileSelectionReducer, selectedTiles)
-    // const[completedGame, completeGame] = 
+    const gameStatus = GAMESTATUS.ACTIVE
+    const gameNumber = Object.keys(localGames).length + 1
+    const [state, dispatch] = useReducer(tileSelectionReducer, [])
 
     if(!user) return <Navigate to='/login'/>
-    if(!player){
-        changeColor(PLAYER.BLACK)
-    }
     if(!gameChoice) return null
 
 
     const handleExitClick = () => {
-            saveGame({...localGames, [`Game-${game}`]: state})
-    
-        /////////////////////////////////////////////////////////////////////
-        // Need to find a way to pass entire game object to local storage////
-        /////////////////////////////////////////////////////////////////////
-
+            if(!player) return <Navigate to='/login'/>
+            const date = new Date()
+            const completedGame = completeGame(gameNumber, gameChoice, player, date, state)
+            saveGame({...localGames, [`${gameNumber}`]: completedGame})
     }
 
 
-    return(
+    return (
             <div className={styles.container}>
                 <h2 className={styles.message}>
                     Current Player: {player?.charAt(0).toUpperCase()}{player?.slice(1).toLowerCase()}
@@ -86,13 +75,15 @@ export default function GameBoard(){
                                 id={index} 
                                 onSelect={() => 
                                     dispatch({type: TileSelectionType.SELECT, payload: index})} 
+                                status={gameStatus}
+                                hasStone = {PLAYER.NONE}
                             />
                         ))}
                     </div>
                 </div>
                 <div className={styles.controls}>
                     <button className={styles.button} onClick={handleExitClick}>press here</button>
-                    <button className={styles.button}>Or here</button>
+                    <button className={styles.button} onClick={() => navigate(`/`)}>Or here</button>
                 </div>
             </div>
     )

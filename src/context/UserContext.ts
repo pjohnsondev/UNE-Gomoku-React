@@ -3,7 +3,7 @@ import { User } from "../types";
 import { PLAYER } from "../constants"
 
 type UserContextType = {
-    user?: User
+    user?: User 
     player?: PLAYER
     login: (username: string) => void
     logout: () => void
