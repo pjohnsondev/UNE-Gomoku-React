@@ -22,16 +22,16 @@ function tileSelectionReducer(state: number[], action: TileSelection){
     }
 }
 
-function completeGame(id: number, boardSize: string, winner: PLAYER, date: Date, moves: number[]){
-    const game = 
-    {
-        id: id,
-        boardSize: boardSize,
-        winner: winner,
-        date: date,
-        moves: moves
-    }
-    return game
+const completeGame = (id: number, boardSize: string, winner: PLAYER, date: Date, moves: number[]) => {
+    return(
+        {
+            id: id,
+            boardSize: boardSize,
+            winner: winner,
+            date: date,
+            moves: moves
+        }
+    )
 }
 
 export default function GameBoard(){
