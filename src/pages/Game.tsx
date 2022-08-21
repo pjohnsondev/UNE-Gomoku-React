@@ -19,22 +19,23 @@ const completeGame = (id: number, boardSize: string, winner: PLAYER, date: Date,
     )
 }
 
-
 export default function Game(){
     const { gameChoice } = useParams()
     const navigate = useNavigate()
     const { user } = useContext(UserContext)
     const {player= PLAYER.BLACK, changeColor } = useContext(UserContext)
+    const [moves, setMoves] = useState<number[]>([])
+    
+
     const [localGames, saveGame] = useLocalStorage<object>(
         'games',
         {}
     )
-    const [gameStatus = GAMESTATUS.ACTIVE, changeGameStatus] = useLocalStorage<object>(
+    const [gameStatus, changeGameStatus] = useLocalStorage<object>(
         'game status',
         []
     )
     const gameNumber = Object.keys(localGames).length + 1
-    let moves: number[]
 
     if(!user) return <Navigate to='/login'/>
     if(!gameChoice) return null
@@ -62,8 +63,8 @@ export default function Game(){
                 player={player}
                 changeStatus={(state: number[]) => {
                     changeGameStatus({"current status": GAMESTATUS.COMPLETE})
-                    moves = state
-                    }
+                    setMoves(state)         
+                }
                 }
                 changePlayer={() => switchPlayer()}
             />

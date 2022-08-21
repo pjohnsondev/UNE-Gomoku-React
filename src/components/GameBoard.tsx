@@ -38,8 +38,16 @@ export default function GameBoard (props: gameBoardProps){
 
     // will return true if game is won and will change game status to complete
     function didWin(){
+        // get state array
+        //get the player who placed the recent stone
+
+        // if player is white loop through odd index of state arrayBuffer
+            // check if there is a win
+        // else if player is black loop through even index of array and 0
+ 
         const win = true
-        if(win) changeStatus(state)
+            if (win) return changeStatus(state)
+            
     }
 
     return(
@@ -53,8 +61,8 @@ export default function GameBoard (props: gameBoardProps){
                     id={index} 
                     onSelect={() => {
                         dispatch({type: TileSelectionType.SELECT, payload: index})
-                        changePlayer()
                         didWin()
+                        changePlayer()
                     }} 
                     status={gameStatus}
                     hasStone = {PLAYER.NONE}
