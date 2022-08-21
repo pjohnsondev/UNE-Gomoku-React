@@ -1,26 +1,11 @@
-import { useContext, useReducer } from "react";
+import { useContext, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../context";
-import { GAMESTATUS, PLAYER, TileSelectionType  } from "../constants";
-import Tile from "../components/Tile";
+import { GAMESTATUS, PLAYER} from "../constants";
 import styles from "./Game.module.css"
 import { useLocalStorage } from "../hooks";
+import GameBoard from "../components/GameBoard";
 
-type TileSelection = {
-    type: TileSelectionType
-    payload: number
-}
-
-
-function tileSelectionReducer(state: number[], action: TileSelection){
-    const { type, payload } = action
-    switch(type) {
-        case TileSelectionType.SELECT:
-            return [...state, payload]
-        default:
-            return state
-    }
-}
 
 const completeGame = (id: number, boardSize: string, winner: PLAYER, date: Date, moves: number[]) => {
     return(
@@ -34,7 +19,8 @@ const completeGame = (id: number, boardSize: string, winner: PLAYER, date: Date,
     )
 }
 
-export default function GameBoard(){
+
+export default function Game(){
     const { gameChoice } = useParams()
     const navigate = useNavigate()
     const { user } = useContext(UserContext)
@@ -43,44 +29,52 @@ export default function GameBoard(){
         'games',
         {}
     )
-    const gameStatus = GAMESTATUS.ACTIVE
+    const [gameStatus = GAMESTATUS.ACTIVE, changeGameStatus] = useLocalStorage<object>(
+        'game status',
+        []
+    )
     const gameNumber = Object.keys(localGames).length + 1
-    const [state, dispatch] = useReducer(tileSelectionReducer, [])
+    let moves: number[]
 
     if(!user) return <Navigate to='/login'/>
     if(!gameChoice) return null
 
+    function switchPlayer(){
+        switch(player){
+            case(PLAYER.BLACK):
+                return PLAYER.WHITE
+            default:
+                return PLAYER.BLACK
+        }
+    }
 
     const handleExitClick = () => {
             if(!player) return <Navigate to='/login'/>
             const date = new Date()
-            const completedGame = completeGame(gameNumber, gameChoice, player, date, state)
+            const completedGame = completeGame(gameNumber, gameChoice, player, date, moves)
             saveGame({...localGames, [`${gameNumber}`]: completedGame})
     }
 
+    const renderBoard = () => {
+        return <GameBoard 
+                gameStatus={gameStatus} 
+                gameChoice = {parseInt(gameChoice)} 
+                player={player}
+                changeStatus={(state: number[]) => {
+                    changeGameStatus({"current status": GAMESTATUS.COMPLETE})
+                    moves = state
+                    }
+                }
+                changePlayer={() => switchPlayer()}
+            />
+    }
 
     return (
             <div className={styles.container}>
                 <h2 className={styles.message}>
                     Current Player: {player?.charAt(0).toUpperCase()}{player?.slice(1).toLowerCase()}
                 </h2>
-                <div className={styles.gameBoard}>
-                    <div 
-                        className={styles.tiles} 
-                        style={{ gridTemplateColumns: `repeat(${parseInt(gameChoice)}, 1fr)` }}
-                    >
-                        {[...Array((parseInt(gameChoice)*parseInt(gameChoice)))].map((_,index) => (
-                            <Tile 
-                                key={`tile-${index}`} 
-                                id={index} 
-                                onSelect={() => 
-                                    dispatch({type: TileSelectionType.SELECT, payload: index})} 
-                                status={gameStatus}
-                                hasStone = {PLAYER.NONE}
-                            />
-                        ))}
-                    </div>
-                </div>
+                {renderBoard()}
                 <div className={styles.controls}>
                     <button className={styles.button} onClick={handleExitClick}>press here</button>
                     <button className={styles.button} onClick={() => navigate(`/`)}>Or here</button>

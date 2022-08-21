@@ -3,7 +3,7 @@ import { User } from "../types"
 import { UserContext } from "../context"
 import { PLAYER } from "../constants"
 
-type UserProviderProps = {
+type UserProviderProps = { 
     children: React.ReactNode
 }
 
@@ -20,4 +20,4 @@ export default function UserProvider ( { children }: UserProviderProps){
             {children}
         </UserContext.Provider>
     )
-}
+} 

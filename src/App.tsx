@@ -5,8 +5,7 @@ import {
 } from "react-router-dom";
 import './App.css';
 import {Header, UserProvider } from'./components';
-import { Home, Login, SignUp, Game, GameLog, History } from './pages'
-import GameBoard from "./pages/Game";
+import { Home, Login, Game, GameLog, History } from './pages'
 
 function App() {
   return (
@@ -16,8 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
-          {/* <Route path="/sign-up" element={<SignUp/>} /> */}
-          <Route path="/game/:gameChoice" element={<GameBoard />} /> 
+          <Route path="/game/:gameChoice" element={<Game/>} /> 
           <Route path="/game-log/:id" element={<GameLog/>} /> 
           <Route path="/games" element={<History/>} />
           <Route path="*"element={<Navigate to="/" replace />} />
