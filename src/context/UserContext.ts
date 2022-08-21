@@ -8,6 +8,7 @@ type UserContextType = {
     login: (username: string) => void
     logout: () => void
     changeColor: (playercolor: PLAYER) => void
+    clearColor: () => void
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType)

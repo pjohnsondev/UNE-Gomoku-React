@@ -11,5 +11,6 @@ export enum TileSelectionType {
 
 export enum GAMESTATUS {
     ACTIVE = "ACTIVE",
-    COMPLETE = "COMPLETE"
+    COMPLETE = "COMPLETE",
+    DRAW = "DRAW"
 }

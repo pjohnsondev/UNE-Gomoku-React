@@ -23,10 +23,9 @@ export default function Game(){
     const { gameChoice } = useParams()
     const navigate = useNavigate()
     const { user } = useContext(UserContext)
-    const {player= PLAYER.BLACK, changeColor } = useContext(UserContext)
+    const {player=PLAYER.BLACK, clearColor } = useContext(UserContext)
     const [moves, setMoves] = useState<number[]>([])
-    
-
+    const [clearBoard, setClear] = useState(false);
     const [localGames, saveGame] = useLocalStorage<object>(
         'games',
         {}
@@ -38,6 +37,7 @@ export default function Game(){
     const gameNumber = Object.keys(localGames).length + 1
 
     if(!user) return <Navigate to='/login'/>
+
     if(!gameChoice) return null
 
     function switchPlayer(){
@@ -50,35 +50,100 @@ export default function Game(){
     }
 
     const handleExitClick = () => {
-            if(!player) return <Navigate to='/login'/>
-            const date = new Date()
-            const completedGame = completeGame(gameNumber, gameChoice, player, date, moves)
-            saveGame({...localGames, [`${gameNumber}`]: completedGame})
+            if(gameStatus["current status"] === GAMESTATUS.COMPLETE) {
+                const date = new Date()
+                const completedGame = completeGame(gameNumber, gameChoice, player, date, moves)
+                clearColor()
+                changeGameStatus({"current status": GAMESTATUS.ACTIVE})
+                saveGame({...localGames, [`${gameNumber}`]: completedGame})
+                let path = `/games`; 
+                navigate(path);
+            } else {
+                let path = `/`; 
+                navigate(path);
+            }
     }
 
+    // Attempted to clear board but was unable to.
     const renderBoard = () => {
-        return <GameBoard 
+        if(!clearBoard){
+            if(gameStatus["current status"] === GAMESTATUS.ACTIVE){
+                return <GameBoard 
                 gameStatus={gameStatus} 
                 gameChoice = {parseInt(gameChoice)} 
                 player={player}
-                changeStatus={(state: number[]) => {
-                    changeGameStatus({"current status": GAMESTATUS.COMPLETE})
-                    setMoves(state)         
-                }
-                }
+                changeStatus={(state: number[], status: GAMESTATUS) => {
+                    changeGameStatus({"current status": status})
+                    setMoves(state)
+                }}
+                changePlayer={() => switchPlayer()}            
+                />
+            } else {
+                return <GameBoard 
+                gameStatus={gameStatus["current status"]} 
+                gameChoice = {parseInt(gameChoice)} 
+                player={player}
+                changeStatus={(state: number[], status: GAMESTATUS) => {
+                    changeGameStatus({"current status": status})
+                    setMoves(state)
+                }}
                 changePlayer={() => switchPlayer()}
+                />
+            }
+        } else {
+            return <GameBoard 
+                gameStatus={gameStatus} 
+                gameChoice = {parseInt(gameChoice)} 
+                player={player}
+                changeStatus={(state: number[], status: GAMESTATUS) => {
+                    changeGameStatus({"current status": status})
+                    setMoves(state)
+                }}
+                changePlayer={() => switchPlayer()}
+                reset = {true}
             />
+        }
+    }
+
+    const checkWinner = () => {
+        if(player === PLAYER.WHITE){
+            return "Black"
+        } else {
+            return "White"
+        }
+    }
+
+    const renderH2 = () => {
+        if(gameStatus["current status"] === GAMESTATUS.ACTIVE){
+            return(
+                <h2 className={styles.message}>
+                    Current Player: {player?.charAt(0).toUpperCase()}{player?.slice(1).toLowerCase()}
+                </h2>
+            )
+        } else if(gameStatus["current status"] === GAMESTATUS.COMPLETE){
+            return(
+            <h2 className={styles.message}>
+                Winner is: {checkWinner()}
+            </h2>
+            )
+        } else {
+            <h2 className={styles.message}>
+                Its a Draw!
+            </h2>
+        }
+    }
+
+    const refresh = () => {
+        setClear(true)
     }
 
     return (
             <div className={styles.container}>
-                <h2 className={styles.message}>
-                    Current Player: {player?.charAt(0).toUpperCase()}{player?.slice(1).toLowerCase()}
-                </h2>
+                {renderH2()}
                 {renderBoard()}
                 <div className={styles.controls}>
-                    <button className={styles.button} onClick={handleExitClick}>press here</button>
-                    <button className={styles.button} onClick={() => navigate(`/`)}>Or here</button>
+                    <button className={styles.button} onClick={refresh}>Restart</button>
+                    <button className={styles.button} onClick={handleExitClick}>Leave</button>
                 </div>
             </div>
     )

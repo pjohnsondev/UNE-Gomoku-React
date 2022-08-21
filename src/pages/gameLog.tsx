@@ -22,6 +22,8 @@ export default function GameLog(){
     const gameChoice = gameDetails().boardSize
     const moves = gameDetails().moves
 
+    if(!user) return <Navigate to='/login'/>
+
     const checkStone = (index: number) => {
         if(moves.includes(index)){
             if(moves.indexOf(index)%2 === 0 || moves.indexOf(index) === 0){

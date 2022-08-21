@@ -16,7 +16,6 @@ export default function Tile(props: TileProps) {
     const { id, onSelect, status, hasStone, move} = props
     const { player, changeColor } = useContext(UserContext)
     const [ stone, setStone ] = useState(hasStone)
-    const [currentStatus = status, changeStatus] = useState(GAMESTATUS)
 
     const getClassNames = () => {
         if(stone === PLAYER.NONE){

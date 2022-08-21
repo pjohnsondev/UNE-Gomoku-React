@@ -4,7 +4,7 @@
     display: flex;
     width: 500px;
     flex-direction: column;
-    background-color: #312efb;
+    background-color: grey;
     align-items: center;
     margin: 0;
     padding: 0;
@@ -16,7 +16,17 @@
     align-items: right;
     display: flex;
     list-style: none;
-    background-color: #3d3afb;
+    background-color: grey;
+}
+
+.game-size .selected {
+    height: 1.5rem;
+    width: 80%;
+    align-items: right;
+    display: flex;
+    list-style: none;
+    background-color: grey;
+    filter: brightness(5)
 }
 
 .game-size:hover{

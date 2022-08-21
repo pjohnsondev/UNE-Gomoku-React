@@ -9,14 +9,15 @@ type UserProviderProps = {
 
 export default function UserProvider ( { children }: UserProviderProps){
     const [user, setUser] = useState<User | undefined>(undefined)
-    const [player, setPlayer ] = useState<PLAYER >()
+    const [player, setPlayer ] = useState<PLAYER | undefined >(undefined)
 
     const login = (username: string) => setUser({ username })  
-    const logout = () => setUser(undefined)
+    const logout = () => {setUser(undefined)}
     const changeColor = (playercolor: PLAYER) => setPlayer(playercolor)
+    const clearColor = () => setPlayer(undefined)
 
     return (
-        <UserContext.Provider value={{ user, login, logout, player, changeColor }}>
+        <UserContext.Provider value={{ user, login, logout, player, changeColor, clearColor }}>
             {children}
         </UserContext.Provider>
     )

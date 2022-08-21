@@ -3,7 +3,6 @@ import { Button } from "semantic-ui-react"
 import Input from "../components/Input"
 import Message from "../components/Message"
 import users from "../data/dummyUserData.json" 
-// import styles from './Login.module.css'
 
 export default function SignUp(){
     const [username, setUser] = useState('')
