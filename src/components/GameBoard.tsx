@@ -1,9 +1,8 @@
-import { useReducer, useEffect, useState } from "react"
+import { useReducer} from "react"
 import { GAMESTATUS } from "../constants"
 import { TileSelectionType, PLAYER } from "../constants"
 import Tile from "./Tile"
 import  styles  from "./GameBoard.module.css"
-import { stat } from "fs"
 
 type gameBoardProps = {
     gameStatus: GAMESTATUS
@@ -90,11 +89,12 @@ export default function GameBoard (props: gameBoardProps){
     function StonesNESW(index: number, moves: number[]){
         let count = 1
         const modVal = gameChoice
+
         // Check NE line for required number of matching stones
         let tileId = index - gameChoice + 1
         while(count < 6 
                 && tileId <= Math.pow(gameChoice, 2)
-                && (tileId%modVal !==0 || (tileId - gameChoice)%modVal === 0)
+                && (tileId%modVal !==0)
                 && moves.includes(tileId)) {
             count ++
             if(count > 4) {
@@ -107,6 +107,7 @@ export default function GameBoard (props: gameBoardProps){
         count = 1
         while(count < 6 
                 && tileId >=0
+                && (tileId+1)%modVal !==0
                 && tileId <= Math.pow(gameChoice, 2)
                 && moves.includes(tileId)){
             count ++
