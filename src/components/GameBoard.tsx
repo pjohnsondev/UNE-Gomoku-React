@@ -3,6 +3,7 @@ import { GAMESTATUS } from "../constants"
 import { TileSelectionType, PLAYER } from "../constants"
 import Tile from "./Tile"
 import  styles  from "./GameBoard.module.css"
+import { stat } from "fs"
 
 type gameBoardProps = {
     gameStatus: GAMESTATUS
@@ -10,6 +11,7 @@ type gameBoardProps = {
     player: PLAYER
     changeStatus: (state: number[], status: GAMESTATUS) => void
     changePlayer: () => void
+    boardClear: (boolean: boolean) => void
     reset?: boolean
 }
 
@@ -24,16 +26,15 @@ function tileSelectionReducer(state: number[], action: TileSelection){
         case TileSelectionType.SELECT:
             return [...state, payload]
         case TileSelectionType.CLEAR:
-            return[]
+            return state = []
         default:
             return state
     }
 }
 
 export default function GameBoard (props: gameBoardProps){
-    const { gameStatus, gameChoice, player, changeStatus, changePlayer} = props
+    const { gameStatus, gameChoice, player, changeStatus, changePlayer, boardClear, reset} = props
     const [state, dispatch] = useReducer(tileSelectionReducer, [])
-
 
     function StonesNS(index: number, moves: number[]){
         let count = 1
@@ -192,41 +193,49 @@ export default function GameBoard (props: gameBoardProps){
     }
 
     const renderTiles = () => {
-        if(gameStatus=== GAMESTATUS.ACTIVE){
-            return(
-                [...Array((gameChoice*gameChoice))].map((_,index) => (
-                <Tile 
-                    key={`tile-${index}`} 
-                    id={index} 
-                    onSelect={() => {
-                        dispatch({type: TileSelectionType.SELECT, payload: index})
-                        didWin(index)
-                        changePlayer()
-                    }} 
-                    status={gameStatus}
-                    hasStone = {PLAYER.NONE}
-                />
-            ))
-            )
-        } 
-        // if game is complete then freeze board
-        else {
-            return(
-                [...Array((gameChoice*gameChoice))].map((_,index) => (
-                <Tile 
-                    key={`tile-${index}`} 
-                    id={index} 
-                    onSelect={() => {
-                        dispatch({type: TileSelectionType.SELECT, payload: index})
-                        didWin(index)
-                        changePlayer()
-                    }} 
-                    status={gameStatus}
-                    hasStone = {PLAYER.NONE}
-                />
-            ))
-            )
+        if(!reset){
+            if(gameStatus=== GAMESTATUS.ACTIVE){
+                return(
+                    [...Array((gameChoice*gameChoice))].map((_,index) => (
+                    <Tile 
+                        key={`tile-${index}`} 
+                        id={index} 
+                        onSelect={() => {
+                            dispatch({type: TileSelectionType.SELECT, payload: index})
+                            didWin(index)
+                            changePlayer()
+                        }} 
+                        status={gameStatus}
+                        hasStone = {PLAYER.NONE}
+                    />
+                ))
+                )
+            } 
+            // if game is complete then freeze board
+            else {
+                return(
+                    [...Array((gameChoice*gameChoice))].map((_,index) => (
+                    <Tile 
+                        key={`tile-${index}`} 
+                        id={index} 
+                        onSelect={() => {
+                            dispatch({type: TileSelectionType.SELECT, payload: index})
+                            didWin(index)
+                            changePlayer()
+                        }} 
+                        status={gameStatus}
+                        hasStone = {PLAYER.NONE}
+                    />
+                ))
+                )
+            }
+        } else {
+            //clear the state from the reducer and clear stones from board
+            if(state.length !== 0) dispatch({type: TileSelectionType.CLEAR, payload: 0})
+            boardClear(true)
+
         }
+        
     }
 
     return(
@@ -236,5 +245,6 @@ export default function GameBoard (props: gameBoardProps){
         >
             {renderTiles()}
         </div>
+
     )
 }

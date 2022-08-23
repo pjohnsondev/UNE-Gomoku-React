@@ -25,7 +25,7 @@ export default function Game(){
     const { user } = useContext(UserContext)
     const {player=PLAYER.BLACK, clearColor } = useContext(UserContext)
     const [moves, setMoves] = useState<number[]>([])
-    const [clearBoard, setClear] = useState(false);
+    const [board, clearBoard] = useState(true)
     const [localGames, saveGame] = useLocalStorage<object>(
         'games',
         {}
@@ -34,6 +34,7 @@ export default function Game(){
         'game status',
         []
     )
+
     const gameNumber = Object.keys(localGames).length + 1
 
     if(!user) return <Navigate to='/login'/>
@@ -66,7 +67,7 @@ export default function Game(){
 
     // Attempted to clear board but was unable to.
     const renderBoard = () => {
-        if(!clearBoard){
+        if(board){
             if(gameStatus["current status"] === GAMESTATUS.ACTIVE){
                 return <GameBoard 
                 gameStatus={gameStatus} 
@@ -75,6 +76,9 @@ export default function Game(){
                 changeStatus={(state: number[], status: GAMESTATUS) => {
                     changeGameStatus({"current status": status})
                     setMoves(state)
+                }}
+                boardClear={(boolean: boolean) => {
+                    clearBoard(boolean)
                 }}
                 changePlayer={() => switchPlayer()}            
                 />
@@ -87,6 +91,9 @@ export default function Game(){
                     changeGameStatus({"current status": status})
                     setMoves(state)
                 }}
+                boardClear={(boolean: boolean) => {
+                    clearBoard(boolean)
+                }}
                 changePlayer={() => switchPlayer()}
                 />
             }
@@ -98,6 +105,10 @@ export default function Game(){
                 changeStatus={(state: number[], status: GAMESTATUS) => {
                     changeGameStatus({"current status": status})
                     setMoves(state)
+
+                }}
+                boardClear={(boolean: boolean) => {
+                    clearBoard(boolean)
                 }}
                 changePlayer={() => switchPlayer()}
                 reset = {true}
@@ -134,7 +145,7 @@ export default function Game(){
     }
 
     const refresh = () => {
-        setClear(true)
+        clearBoard(false)
     }
 
     return (
