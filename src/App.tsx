@@ -5,7 +5,7 @@ import {
 } from "react-router-dom";
 import './App.css';
 import {Header, UserProvider } from'./components';
-import { Home, Login, Game, GameLog, History } from './pages'
+import { Home, Login, Game, GameLog, History, SignUp } from './pages'
 
 function App() {
   return (
@@ -15,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login/>} />
+          <Route path="/signup" element={<SignUp/>} />
           <Route path="/game/:gameChoice" element={<Game/>} /> 
           <Route path="/game-log/:id" element={<GameLog/>} /> 
           <Route path="/games" element={<History/>} />
