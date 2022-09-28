@@ -1,9 +1,11 @@
 import { PLAYER } from "../constants"
 
 export type Game = {
-    id: number,
+    _id: string
+    GameId: number,
     boardSize: number,
     winner: PLAYER,
     date: Date, 
     moves: number[],
+    userId: string
 }
