@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import styles from "./Home.module.css"
 import React, {useState} from "react" 
 import { Button } from 'semantic-ui-react'
+import { get, post} from '../utils/http'
 
 const smallestBoard = 5
 const LargestBoard = 19

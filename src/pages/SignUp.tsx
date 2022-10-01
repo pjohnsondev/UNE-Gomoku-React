@@ -1,29 +1,31 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "semantic-ui-react"
 import Input from "../components/Input"
 import Message from "../components/Message"
-import users from "../data/dummyUserData.json" 
+import { UserContext } from "../context"
 
 export default function SignUp(){
+    const { register } = useContext(UserContext)
+    const Navigate = useNavigate()
     const [username, setUser] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] =  useState('')
 
-    const signUp = () => {
-        const user = users.find((u) => u.username === username)
-        if(user){
-            setError(`Username ${username} is already taken`)
-            return
-        } else if(password !== confirmPassword) { 
+    const signUp = async () => {
+        setError('')
+
+        if(password !== confirmPassword ) {
             setError("Passwords do not match")
             return
-        } else if (!password || !confirmPassword){
-            setError("Password cannot be empty")
-            return
+        }
+
+        const result = await register(username, password)
+        if(result === true){
+            Navigate('/')
         } else {
-            setError("Signup Successfull")
-            return
+            setError(result)
         }
     }
 

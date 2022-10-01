@@ -5,7 +5,8 @@ import { PLAYER } from "../constants"
 type UserContextType = {
     user?: User 
     player?: PLAYER
-    login: (username: string) => void
+    login: (username: string, password: string) => Promise<true | string>
+    register: (username: string, password: string) => Promise<true | string>
     logout: () => void
     changeColor: (playercolor: PLAYER) => void
     clearColor: () => void

@@ -3,26 +3,22 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "semantic-ui-react"
 import { Input, Message } from "../components"
 import { UserContext  } from "../context"
-import users from "../data/dummyUserData.json"  
 
 export default function Login() {
     const { login } = useContext(UserContext)
     const Navigate = useNavigate()
     const [username, setUser] = useState('')
     const [password, setPassword] = useState('')
-    const [credentialsInvalid, setCredentialsInvalid] =  useState(false )
+    const [errorMessage, setError ] = useState('')
 
-    const handleLogin = () => {
-        const user = users.find(
-            (u) => u.username === username && u.password === password
-        )
-        if(!user){
-            setCredentialsInvalid(true)
-        } else { 
-            login(username)
-            Navigate("/")
+    const handleLogin = async () => {
+        setError('')
+        const result = await login(username, password)
+        if(result === true){
+            Navigate('/')
+        } else {
+            setError(result)
         }
-
     }
 
     return(
@@ -30,13 +26,13 @@ export default function Login() {
             e.preventDefault() 
             handleLogin()
             }}> 
-            {credentialsInvalid && <Message variant="error" message="Invalid username or password"/>}
+            {errorMessage && <Message variant="error" message={errorMessage}/>}
             <Input 
                 name="username"
                 placeholder="Username"
                 onChange={(e) => {
                     setUser(e.target.value)
-                    setCredentialsInvalid(false) 
+                    setError('') 
                 }}
             />
             <Input 
@@ -45,7 +41,7 @@ export default function Login() {
                 type="password"
                 onChange={(e) => {
                     setPassword(e.target.value)
-                    setCredentialsInvalid(false)
+                    setError('')
                 }}
             />
             <Button primary type="submit">Sign In</Button>
