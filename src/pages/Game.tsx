@@ -1,28 +1,49 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useReducer, useState, useCallback } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../context";
-import { GAMESTATUS, PLAYER} from "../constants";
+import { GAMESTATUS, PLAYER, TileSelectionType} from "../constants";
 import styles from "./Game.module.css"
 import { useLocalStorage } from "../hooks";
-import GameBoard from "../components/GameBoard";
+import { GameBoard } from "../components";
+import { get, post, put, del } from "../utils/http";
+import { ActiveGame, Game } from "../types";
 
 
-const completeGame = (id: number, boardSize: string, winner: PLAYER, date: Date, moves: number[]) => {
+const completeGame = (completedGame: ActiveGame, winner: PLAYER) => {
     return(
-        {
-            id: id,
-            boardSize: boardSize,
-            winner: winner,
-            date: date,
-            moves: moves
-        }
+        {...completeGame, winner}
     )
 }
 
-export default function Game(){
-    const { gameChoice } = useParams()
+type TileSelection = {
+    type: TileSelectionType.SELECT | TileSelectionType.CLEAR
+    payload: number
+} | {
+    type: TileSelectionType.INITIALIZE
+    payload: number[]
+}
+
+function tileSelectionReducer(activeMoves: number[], action: TileSelection){
+    const { type, payload } = action
+    switch(type) {
+        case TileSelectionType.INITIALIZE:
+            return  payload
+        case TileSelectionType.SELECT:
+            return [...activeMoves, payload]
+        case TileSelectionType.CLEAR:
+            return activeMoves = []
+        default:
+            return activeMoves
+    }
+}
+
+
+export default function GamePage(){
+    const [activeMoves, dispatch] = useReducer(tileSelectionReducer, [])
     const navigate = useNavigate()
-    const { user } = useContext(UserContext)
+    const { user, logout } = useContext(UserContext)
+    const [activeGame, setActiveGame ] = useState<ActiveGame>()
+    const { gameId } = useParams()
     const {player=PLAYER.BLACK, clearColor } = useContext(UserContext)
     const [moves, setMoves] = useState<number[]>([])
     const [board, clearBoard] = useState(true)
@@ -37,9 +58,44 @@ export default function Game(){
 
     const gameNumber = Object.keys(localGames).length + 1
 
+    //////////////////
+   
+    
+    const getActiveGame = useCallback(async () => {
+        try {
+            const result = await get<ActiveGame>(`/active/${gameId}`)
+            setActiveGame(result)
+            dispatch({
+                type: TileSelectionType.INITIALIZE,
+                payload: result.moves
+            })
+        } catch (err) {
+            console.log((err as Error).message)
+            logout()
+            navigate("/")
+        }
+    }, [gameId, logout, navigate])
+
+    useEffect(() => {
+        if(!user) return
+        getActiveGame()
+    },[getActiveGame, user])
+
+
+    if(!user) return <Navigate to="/login" />
+    if(!activeGame) return null
+
+    const { boardSize } = activeGame
+
+
+    //////////////////////
+
+
     if(!user) return <Navigate to='/login'/>
 
-    if(!gameChoice) return null
+
+
+    if(!boardSize) return null
 
     function switchPlayer(){
         switch(player){
@@ -50,10 +106,12 @@ export default function Game(){
         }
     }
 
+
+
     const handleExitClick = () => {
             if(gameStatus["current status"] === GAMESTATUS.COMPLETE) {
                 const date = new Date()
-                const completedGame = completeGame(gameNumber, gameChoice, player, date, moves)
+                const completedGame = completeGame(activeGame, player)
                 clearColor()
                 changeGameStatus({"current status": GAMESTATUS.ACTIVE})
                 saveGame({...localGames, [`${gameNumber}`]: completedGame})
@@ -70,8 +128,9 @@ export default function Game(){
         if(board){
             if(gameStatus["current status"] === GAMESTATUS.ACTIVE){
                 return <GameBoard 
+                _id = {activeGame._id}
                 gameStatus={gameStatus} 
-                gameChoice = {parseInt(gameChoice)} 
+                boardSize = {boardSize} 
                 player={player}
                 changeStatus={(state: number[], status: GAMESTATUS) => {
                     changeGameStatus({"current status": status})
@@ -83,9 +142,10 @@ export default function Game(){
                 changePlayer={() => switchPlayer()}            
                 />
             } else {
-                return <GameBoard 
+                return <GameBoard
+                _id = {activeGame._id} 
                 gameStatus={gameStatus["current status"]} 
-                gameChoice = {parseInt(gameChoice)} 
+                boardSize = {boardSize} 
                 player={player}
                 changeStatus={(state: number[], status: GAMESTATUS) => {
                     changeGameStatus({"current status": status})
@@ -98,9 +158,10 @@ export default function Game(){
                 />
             }
         } else {
-            return <GameBoard 
+            return <GameBoard
+                _id = {activeGame._id} 
                 gameStatus={gameStatus} 
-                gameChoice = {parseInt(gameChoice)} 
+                boardSize = {boardSize} 
                 player={player}
                 changeStatus={(state: number[], status: GAMESTATUS) => {
                     changeGameStatus({"current status": status})
@@ -143,7 +204,7 @@ export default function Game(){
             </h2>
         }
     }
-
+    
     const refresh = () => {
         clearBoard(false)
     }

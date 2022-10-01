@@ -2,9 +2,11 @@
 
 import { useNavigate } from "react-router-dom"
 import styles from "./Home.module.css"
-import React, {useState} from "react" 
+import React, {useState, useCallback, useEffect, useContext } from "react" 
+import { UserContext } from "../context";
 import { Button } from 'semantic-ui-react'
 import { get, post} from '../utils/http'
+import { ActiveGame, Game } from "../types";
 
 const smallestBoard = 5
 const LargestBoard = 19
@@ -13,6 +15,37 @@ export const gameSizes = [...Array(LargestBoard - smallestBoard + 1).keys()].map
 export default function Home(props: any) {
   const navigate = useNavigate()
   const [selected, setSelected] = useState(false)
+  const { user, logout } = useContext(UserContext)
+
+
+  ///////////////////
+
+  const [ gamesHistory, setHistory ] = useState<Game[]>([])
+
+  const fetchGamesHistory = useCallback(async () => {
+      try {
+          const fetchedGames = await get<Game[]>(
+              "/game"
+          )
+          setHistory(fetchedGames)            
+      } catch (err) {
+          console.log((err as Error).message)
+          logout()
+          navigate('/')
+      }
+  }, [logout, navigate])
+
+  useEffect(() => {
+      if(!user) return
+      fetchGamesHistory()
+  }, [fetchGamesHistory, user])
+
+  
+
+  ///////////////////
+
+
+
 
   const buttonText = "Start"
   let gameChoice = 5
@@ -42,7 +75,22 @@ export default function Home(props: any) {
   return (
     <>
       <GameSizes/>
-      <Button primary onClick={() => navigate(`/game/${gameChoice}`)}>{buttonText}</Button>
+      <Button primary onClick={ async () => {
+        let gameId = gamesHistory.length+1
+        try {
+          const result = await post(`/active`, {
+            gameId: gameId,
+            boardSize: gameChoice,
+            date: new Date(),
+            moves: [],
+            userId: user?._id
+          }).then((res) => {
+            navigate(`/game/${(res as ActiveGame)._id}`)
+          })
+        } catch (err) {
+          console.log((err as Error).message)
+        }
+        }}>{buttonText}</Button>
     </>
 
   )
