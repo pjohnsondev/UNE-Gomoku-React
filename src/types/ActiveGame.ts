@@ -4,7 +4,7 @@ export type ActiveGame = {
     _id: string, 
     gameId: number,
     boardSize: number,
-    winner: PLAYER, 
+    winner: string, 
     date: Date, 
     moves: number[],
     userId: string

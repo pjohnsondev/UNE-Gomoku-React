@@ -1,42 +1,23 @@
 import { useContext, useEffect, useReducer, useState, useCallback } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../context";
-import { GAMESTATUS, PLAYER } from "../constants";
+import { GAMESTATUS, PLAYER, TileSelectionType } from "../constants";
 import styles from "./Game.module.css"
-import { useLocalStorage } from "../hooks";
 import { GameBoard } from "../components";
-import { get, post, put, del } from "../utils/http";
-import { ActiveGame, Game } from "../types";
-import { delteActiveGame, postCompletedGame } from "../utils/bdCalls";
+import { del, get, post, put } from "../utils/http";
+import { ActiveGame } from "../types";
+import { delteActiveGame, getActiveGameById, postCompletedGame, updateActiveGame} from "../utils/apiCalls";
+import { TileSelection } from "../types/TileSelection";
 
 
-const completeGame = (completedGame: ActiveGame, winner: PLAYER) => {
-    return(
-        {...completeGame, winner}
-    )
-}
-
-
-export default function GamePage(){
+export default function ActiveGamePage(){
     const navigate = useNavigate()
     const { user, logout } = useContext(UserContext)
-    const [activeGame, setActiveGame ] = useState<ActiveGame | Game >()
+    const [activeGame, setActiveGame ] = useState<ActiveGame>()
     const { gameId } = useParams()
-    const {player=PLAYER.BLACK, clearColor } = useContext(UserContext)
+    const {player=PLAYER.BLACK, clearColor, changeColor } = useContext(UserContext)
     const [board, clearBoard] = useState(true)
-    const [localGames, saveGame] = useLocalStorage<object>(
-        'games',
-        {}
-    )
-    const [gameStatus, changeGameStatus] = useLocalStorage<object>(
-        'game status',
-        []
-    )
-
-    const gameNumber = Object.keys(localGames).length + 1;
-
-    //////////////////
-   
+    const [gameStatus, changeGameStatus] = useState<GAMESTATUS>(GAMESTATUS.ACTIVE)
     
     const getActiveGame = useCallback(async () => {
         try {
@@ -58,14 +39,6 @@ export default function GamePage(){
     if(!activeGame) return null
 
     const { boardSize } = activeGame
-    //////////////////////
-
-
-    if(!user) return <Navigate to='/login'/>
-
-
-
-    if(!boardSize) return null
 
     function switchPlayer(){
         switch(player){
@@ -77,16 +50,16 @@ export default function GamePage(){
     }
 
 
-
     // TODO: Add delete in database to exit
-    const handleExitClick = () => {
-            if(gameStatus["current status"] === GAMESTATUS.COMPLETE) {
-                changeGameStatus({"current status": GAMESTATUS.ACTIVE})
-                delteActiveGame(activeGame._id)
-                postCompletedGame(activeGame)
+    const handleExitClick = async () => {
+            if(gameStatus === GAMESTATUS.COMPLETE) {
+                await del(`/active/${gameId}`)
+                await post(`/game`, {
+                    ...activeGame
+                })
                 navigate(`/games`);
             } else {
-                delteActiveGame(activeGame._id)
+                await delteActiveGame(activeGame._id)
                 let path = `/`; 
                 navigate(path);
             }
@@ -97,31 +70,25 @@ export default function GamePage(){
             return
         } else {
             activeGame.moves.push(id)
-            await put(`/active/${activeGame._id}`, {
+            const updatedGame = await put(`/active/${gameId}`, {
                 ...activeGame
-            }).then((response) => {
-                if('winner' in (response as Game)){
-                    setActiveGame(response as Game)
-                    let winner = (response as Game).winner;
-                    if(winner === PLAYER.BLACK || winner === PLAYER.WHITE ){
-                        changeGameStatus({"current status": GAMESTATUS.COMPLETE})
-                    } else if(winner === PLAYER.DRAW ){
-                        changeGameStatus({"current status": GAMESTATUS.DRAW})
-                    }
-                } else {
-                    setActiveGame(response as ActiveGame)
-                }
             })
-
+            setActiveGame((updatedGame as ActiveGame))
+            let winner = (updatedGame as ActiveGame).winner;
+            if(winner === "black" || winner === "white" ){
+                changeGameStatus(GAMESTATUS.COMPLETE)
+            } else if(winner === "draw" ){
+                changeGameStatus(GAMESTATUS.DRAW)
+            }
         }     
     }
     
     const renderBoard = () => {
         if(board){
-            if(gameStatus["current status"] === GAMESTATUS.ACTIVE){
+            if(gameStatus === GAMESTATUS.ACTIVE){
                 return <GameBoard 
                 _id = {activeGame._id}
-                gameStatus={gameStatus["current status"]} 
+                gameStatus = {gameStatus}
                 boardSize = {boardSize} 
                 player={player}
                 boardClear={(boolean: boolean) => {
@@ -133,7 +100,7 @@ export default function GamePage(){
             } else {
                 return <GameBoard
                 _id = {activeGame._id} 
-                gameStatus={gameStatus["current status"]} 
+                gameStatus={gameStatus} 
                 boardSize = {boardSize} 
                 player={player}
                 boardClear={(boolean: boolean) => {
@@ -146,7 +113,7 @@ export default function GamePage(){
         } else {
             return <GameBoard
                 _id = {activeGame._id} 
-                gameStatus={gameStatus["current status"]} 
+                gameStatus={gameStatus} 
                 boardSize = {boardSize} 
                 player={player}
                 boardClear={(boolean: boolean) => {
@@ -160,21 +127,24 @@ export default function GamePage(){
     }
 
     const checkWinner = () => {
-        if(player === PLAYER.WHITE){
-            return "Black"
-        } else {
-            return "White"
+        switch(activeGame.winner){
+            case "black":
+                return "Black"
+            case "white":
+                return "White"
+            case "draw":
+                return "Draw"
         }
     }
 
     const renderH2 = () => {
-        if(gameStatus["current status"] === GAMESTATUS.ACTIVE){
+        if(gameStatus === GAMESTATUS.ACTIVE){
             return(
                 <h2 className={styles.message}>
                     Current Player: {player?.charAt(0).toUpperCase()}{player?.slice(1).toLowerCase()}
                 </h2>
             )
-        } else if(gameStatus["current status"] === GAMESTATUS.COMPLETE){
+        } else if(gameStatus === GAMESTATUS.COMPLETE){
             return(
             <h2 className={styles.message}>
                 Winner is: {checkWinner()}
@@ -199,7 +169,6 @@ export default function GamePage(){
         }
     }
 
-    // TODO: find way to use the active game moves to set tiles
 
     return (
             <div className={styles.container}>
