@@ -7,6 +7,7 @@ import { UserContext } from "../context";
 import { Button } from 'semantic-ui-react'
 import { get, post} from '../utils/http'
 import { ActiveGame, Game } from "../types";
+import { PLAYER } from "../constants";
 
 const smallestBoard = 5
 const LargestBoard = 19
@@ -81,6 +82,7 @@ export default function Home(props: any) {
           const result = await post(`/active`, {
             gameId: gameId,
             boardSize: gameChoice,
+            winner: PLAYER.NONE,
             date: new Date(),
             moves: [],
             userId: user?._id

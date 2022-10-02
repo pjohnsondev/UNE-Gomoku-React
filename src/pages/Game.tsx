@@ -1,12 +1,13 @@
 import { useContext, useEffect, useReducer, useState, useCallback } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../context";
-import { GAMESTATUS, PLAYER, TileSelectionType} from "../constants";
+import { GAMESTATUS, PLAYER } from "../constants";
 import styles from "./Game.module.css"
 import { useLocalStorage } from "../hooks";
 import { GameBoard } from "../components";
 import { get, post, put, del } from "../utils/http";
 import { ActiveGame, Game } from "../types";
+import { delteActiveGame, postCompletedGame } from "../utils/bdCalls";
 
 
 const completeGame = (completedGame: ActiveGame, winner: PLAYER) => {
@@ -15,37 +16,13 @@ const completeGame = (completedGame: ActiveGame, winner: PLAYER) => {
     )
 }
 
-type TileSelection = {
-    type: TileSelectionType.SELECT | TileSelectionType.CLEAR
-    payload: number
-} | {
-    type: TileSelectionType.INITIALIZE
-    payload: number[]
-}
-
-function tileSelectionReducer(activeMoves: number[], action: TileSelection){
-    const { type, payload } = action
-    switch(type) {
-        case TileSelectionType.INITIALIZE:
-            return  payload
-        case TileSelectionType.SELECT:
-            return [...activeMoves, payload]
-        case TileSelectionType.CLEAR:
-            return activeMoves = []
-        default:
-            return activeMoves
-    }
-}
-
 
 export default function GamePage(){
-    const [activeMoves, dispatch] = useReducer(tileSelectionReducer, [])
     const navigate = useNavigate()
     const { user, logout } = useContext(UserContext)
-    const [activeGame, setActiveGame ] = useState<ActiveGame>()
+    const [activeGame, setActiveGame ] = useState<ActiveGame | Game >()
     const { gameId } = useParams()
     const {player=PLAYER.BLACK, clearColor } = useContext(UserContext)
-    const [moves, setMoves] = useState<number[]>([])
     const [board, clearBoard] = useState(true)
     const [localGames, saveGame] = useLocalStorage<object>(
         'games',
@@ -56,7 +33,7 @@ export default function GamePage(){
         []
     )
 
-    const gameNumber = Object.keys(localGames).length + 1
+    const gameNumber = Object.keys(localGames).length + 1;
 
     //////////////////
    
@@ -65,14 +42,10 @@ export default function GamePage(){
         try {
             const result = await get<ActiveGame>(`/active/${gameId}`)
             setActiveGame(result)
-            dispatch({
-                type: TileSelectionType.INITIALIZE,
-                payload: result.moves
-            })
         } catch (err) {
             console.log((err as Error).message)
             logout()
-            navigate("/")
+            navigate("/")    
         }
     }, [gameId, logout, navigate])
 
@@ -81,13 +54,10 @@ export default function GamePage(){
         getActiveGame()
     },[getActiveGame, user])
 
-
     if(!user) return <Navigate to="/login" />
     if(!activeGame) return null
 
     const { boardSize } = activeGame
-
-
     //////////////////////
 
 
@@ -108,38 +78,57 @@ export default function GamePage(){
 
 
 
+    // TODO: Add delete in database to exit
     const handleExitClick = () => {
             if(gameStatus["current status"] === GAMESTATUS.COMPLETE) {
-                const date = new Date()
-                const completedGame = completeGame(activeGame, player)
-                clearColor()
                 changeGameStatus({"current status": GAMESTATUS.ACTIVE})
-                saveGame({...localGames, [`${gameNumber}`]: completedGame})
-                let path = `/games`; 
-                navigate(path);
+                delteActiveGame(activeGame._id)
+                postCompletedGame(activeGame)
+                navigate(`/games`);
             } else {
+                delteActiveGame(activeGame._id)
                 let path = `/`; 
                 navigate(path);
             }
     }
 
-    // Attempted to clear board but was unable to.
+    const handleClick = async (id: number) => {
+        if(gameStatus === GAMESTATUS.COMPLETE || gameStatus === GAMESTATUS.DRAW){
+            return
+        } else {
+            activeGame.moves.push(id)
+            await put(`/active/${activeGame._id}`, {
+                ...activeGame
+            }).then((response) => {
+                if('winner' in (response as Game)){
+                    setActiveGame(response as Game)
+                    let winner = (response as Game).winner;
+                    if(winner === PLAYER.BLACK || winner === PLAYER.WHITE ){
+                        changeGameStatus({"current status": GAMESTATUS.COMPLETE})
+                    } else if(winner === PLAYER.DRAW ){
+                        changeGameStatus({"current status": GAMESTATUS.DRAW})
+                    }
+                } else {
+                    setActiveGame(response as ActiveGame)
+                }
+            })
+
+        }     
+    }
+    
     const renderBoard = () => {
         if(board){
             if(gameStatus["current status"] === GAMESTATUS.ACTIVE){
                 return <GameBoard 
                 _id = {activeGame._id}
-                gameStatus={gameStatus} 
+                gameStatus={gameStatus["current status"]} 
                 boardSize = {boardSize} 
                 player={player}
-                changeStatus={(state: number[], status: GAMESTATUS) => {
-                    changeGameStatus({"current status": status})
-                    setMoves(state)
-                }}
                 boardClear={(boolean: boolean) => {
                     clearBoard(boolean)
                 }}
-                changePlayer={() => switchPlayer()}            
+                changePlayer={() => switchPlayer()}
+                onClick={handleClick}            
                 />
             } else {
                 return <GameBoard
@@ -147,32 +136,25 @@ export default function GamePage(){
                 gameStatus={gameStatus["current status"]} 
                 boardSize = {boardSize} 
                 player={player}
-                changeStatus={(state: number[], status: GAMESTATUS) => {
-                    changeGameStatus({"current status": status})
-                    setMoves(state)
-                }}
                 boardClear={(boolean: boolean) => {
                     clearBoard(boolean)
                 }}
                 changePlayer={() => switchPlayer()}
+                onClick={handleClick}    
                 />
             }
         } else {
             return <GameBoard
                 _id = {activeGame._id} 
-                gameStatus={gameStatus} 
+                gameStatus={gameStatus["current status"]} 
                 boardSize = {boardSize} 
                 player={player}
-                changeStatus={(state: number[], status: GAMESTATUS) => {
-                    changeGameStatus({"current status": status})
-                    setMoves(state)
-
-                }}
                 boardClear={(boolean: boolean) => {
                     clearBoard(boolean)
                 }}
                 changePlayer={() => switchPlayer()}
                 reset = {true}
+                onClick={handleClick}    
             />
         }
     }
@@ -205,9 +187,19 @@ export default function GamePage(){
         }
     }
     
-    const refresh = () => {
-        clearBoard(false)
+    const refresh = async () => {
+        if(gameStatus === GAMESTATUS.COMPLETE || gameStatus === GAMESTATUS.DRAW){
+            return
+        } else {
+            activeGame.moves = []
+            await put(`/active/${activeGame._id}`, {
+                ...activeGame
+            })
+            clearBoard(false)
+        }
     }
+
+    // TODO: find way to use the active game moves to set tiles
 
     return (
             <div className={styles.container}>

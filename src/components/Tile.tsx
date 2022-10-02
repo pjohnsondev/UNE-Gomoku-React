@@ -30,19 +30,21 @@ export default function Tile(props: TileProps) {
         }
     }
 
+    // TODO: Only call onSelect() if there is not a stone already on the tile
     const handleClick = () => {
-        if(status === GAMESTATUS.COMPLETE) return
+        if(status === GAMESTATUS.COMPLETE || status === GAMESTATUS.DRAW) return
         if(player === PLAYER.WHITE){
             if(stone === PLAYER.NONE){
                 setStone(player)
                 onSelect()
+                changeColor(PLAYER.BLACK)
             }
-            changeColor(PLAYER.BLACK)
         } else {
-            if(stone === PLAYER.NONE)
+            if(stone === PLAYER.NONE){
                 setStone(PLAYER.BLACK)
                 onSelect()
-            changeColor(PLAYER.WHITE)
+                changeColor(PLAYER.WHITE)
+            }
         }
     }
 
