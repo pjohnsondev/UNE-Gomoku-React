@@ -1,5 +1,3 @@
-import { PLAYER } from "../constants"
-
 export type ActiveGame = {
     _id: string, 
     gameId: number,

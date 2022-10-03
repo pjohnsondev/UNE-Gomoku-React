@@ -1,14 +1,8 @@
-import { useContext, useReducer, useEffect, useCallback, useState } from "react"
-import { Navigate, useNavigate, useParams } from "react-router-dom"
+import { useReducer } from "react"
 import { GAMESTATUS } from "../constants"
 import { TileSelectionType, PLAYER } from "../constants"
 import Tile from "./Tile"
 import  styles  from "./GameBoard.module.css"
-import { ActiveGame } from "../types"
-import { UserContext } from "../context"
-import { get, post, put, del } from "../utils/http"
-import Stone from "./Stone"
-import { isThisTypeNode } from "typescript"
 
 type gameBoardProps = {
     _id: string,
@@ -46,11 +40,8 @@ function tileSelectionReducer(activeMoves: number[], action: TileSelection){
 
 
 export default function GameBoard (props: gameBoardProps){
-    const { user, logout } = useContext(UserContext)
-    const [activeGame, setActiveGame ] = useState<ActiveGame>()
     const [activeMoves, dispatch] = useReducer(tileSelectionReducer, [])
-    const { _id, boardSize, gameStatus, player, changePlayer, boardClear, reset, onClick} = props
-    const navigate = useNavigate();
+    const { boardSize, gameStatus, changePlayer, boardClear, reset, onClick} = props
 
     
     const renderTiles = () => {

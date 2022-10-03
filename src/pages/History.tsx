@@ -19,7 +19,7 @@ export default function History(){
             )
             setHistory(fetchedGames)            
         } catch (err) {
-            console.log((err as Error).message)
+            console.log((err as Error).message) 
             logout()
             navigate('/')
         }

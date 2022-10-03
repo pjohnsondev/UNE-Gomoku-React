@@ -1,13 +1,12 @@
-import { useContext, useEffect, useReducer, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../context";
-import { GAMESTATUS, PLAYER, TileSelectionType } from "../constants";
+import { GAMESTATUS, PLAYER, } from "../constants";
 import styles from "./Game.module.css"
 import { GameBoard } from "../components";
 import { del, get, post, put } from "../utils/http";
 import { ActiveGame } from "../types";
-import { delteActiveGame, getActiveGameById, postCompletedGame, updateActiveGame} from "../utils/apiCalls";
-import { TileSelection } from "../types/TileSelection";
+import { delteActiveGame } from "../utils/apiCalls";
 
 
 export default function ActiveGamePage(){
@@ -15,7 +14,7 @@ export default function ActiveGamePage(){
     const { user, logout } = useContext(UserContext)
     const [activeGame, setActiveGame ] = useState<ActiveGame>()
     const { gameId } = useParams()
-    const {player=PLAYER.BLACK, clearColor, changeColor } = useContext(UserContext)
+    const {player=PLAYER.BLACK,} = useContext(UserContext)
     const [board, clearBoard] = useState(true)
     const [gameStatus, changeGameStatus] = useState<GAMESTATUS>(GAMESTATUS.ACTIVE)
     

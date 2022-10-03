@@ -43,7 +43,9 @@ export default function Header(){
 
   const clearObjects = () => {
     clearColor()
-    changeGameStatus({"current status": GAMESTATUS.ACTIVE})
+    if(gameStatus){
+      changeGameStatus({"current status": GAMESTATUS.ACTIVE})
+    }
   }
 
 

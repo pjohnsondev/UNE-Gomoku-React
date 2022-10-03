@@ -17,7 +17,7 @@ export default function Home(props: any) {
   const navigate = useNavigate()
   const [selected, setSelected] = useState(false)
   const { user, logout } = useContext(UserContext)
-
+ 
 
   ///////////////////
 
@@ -79,7 +79,7 @@ export default function Home(props: any) {
       <Button primary onClick={ async () => {
         let gameId = gamesHistory.length+1
         try {
-          const result = await post(`/active`, {
+          await post(`/active`, {
             gameId: gameId,
             boardSize: gameChoice,
             winner: PLAYER.NONE,

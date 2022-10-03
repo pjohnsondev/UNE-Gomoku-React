@@ -4,10 +4,9 @@ import { UserContext } from "../context";
 import styles from "./Game.module.css"
 import { Tile } from "../components"
 import { GAMESTATUS, PLAYER } from "../constants";
-import { getGameById } from "../utils/apiCalls";
 import { Game } from "../types";
 import { get } from "../utils/http";
-
+ 
 
 export default function GameLog(){
     const navigate = useNavigate()

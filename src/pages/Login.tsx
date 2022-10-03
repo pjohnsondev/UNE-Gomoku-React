@@ -18,7 +18,7 @@ export default function Login() {
             Navigate('/')
         } else {
             setError(result)
-        }
+        } 
     }
 
     return(
