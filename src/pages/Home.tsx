@@ -19,8 +19,6 @@ export default function Home(props: any) {
   const { user, logout } = useContext(UserContext)
  
 
-  ///////////////////
-
   const [ gamesHistory, setHistory ] = useState<Game[]>([])
 
   const fetchGamesHistory = useCallback(async () => {
@@ -41,9 +39,6 @@ export default function Home(props: any) {
       fetchGamesHistory()
   }, [fetchGamesHistory, user])
 
-  
-
-  ///////////////////
 
 
 

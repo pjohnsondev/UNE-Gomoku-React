@@ -5,6 +5,7 @@ import { get } from "../utils/http";
 import { Game } from "../types";
 import GameItem from "../components/GameItem" 
 import styles from "./History.module.css"
+import { API_HOST } from "../constants";
 
 
 export default function History(){
@@ -15,16 +16,16 @@ export default function History(){
     const fetchGamesHistory = useCallback(async () => {
         try {
             const fetchedGames = await get<Game[]>(
-                "/game"
+                `${API_HOST}/game`
             )
             setHistory(fetchedGames)            
         } catch (err) {
-            console.log((err as Error).message) 
+            console.log((err as Error).message)
             logout()
             navigate('/')
         }
     }, [logout, navigate])
-
+  
     useEffect(() => {
         if(!user) return
         fetchGamesHistory()
