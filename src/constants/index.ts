@@ -16,3 +16,5 @@ export enum GAMESTATUS {
     COMPLETE = "COMPLETE",
     DRAW = "DRAW"
 }
+
+export const API_HOST = process.env.REACT_APP_API_HOST || ''

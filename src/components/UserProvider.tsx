@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { User, Credentials } from "../types"
 import { UserContext } from "../context"
-import { PLAYER } from "../constants"
+import { PLAYER, API_HOST } from "../constants"
 import { useLocalStorage } from "../hooks"
 import { post, setToken } from "../utils/http"
 
@@ -19,7 +19,7 @@ export default function UserProvider ( { children }: UserProviderProps){
 
     const login = async (username: string, password: string) => {
         try {
-            const user = await post<Credentials, User>('/auth/login', {
+            const user = await post<Credentials, User>(`${API_HOST}/auth/login`, {
                 username,
                 password
             })
@@ -36,7 +36,7 @@ export default function UserProvider ( { children }: UserProviderProps){
 
     const register = async (username: string, password: string) => {
         try {
-            const user = await post<Credentials, User>('/auth/register', {
+            const user = await post<Credentials, User>(`${API_HOST}/auth/register`, {
                 username,
                 password
             })

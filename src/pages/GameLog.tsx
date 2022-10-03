@@ -3,7 +3,7 @@ import { useParams, Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "../context";
 import styles from "./Game.module.css"
 import { Tile } from "../components"
-import { GAMESTATUS, PLAYER } from "../constants";
+import { API_HOST, GAMESTATUS, PLAYER } from "../constants";
 import { Game } from "../types";
 import { get } from "../utils/http";
  
@@ -16,7 +16,7 @@ export default function GameLog(){
     
     const getGame = useCallback(async () => {
         try {
-            const result = await get<Game>(`/game/${id}`)
+            const result = await get<Game>(`${API_HOST}/game/${id}`)
             setGameDetails(result)
         } catch (err) {
             console.log((err as Error).message)

@@ -2,12 +2,12 @@
 
 import { useNavigate } from "react-router-dom"
 import styles from "./Home.module.css"
-import React, {useState, useCallback, useEffect, useContext } from "react" 
+import {useState, useCallback, useEffect, useContext } from "react" 
 import { UserContext } from "../context";
 import { Button } from 'semantic-ui-react'
 import { get, post} from '../utils/http'
 import { ActiveGame, Game } from "../types";
-import { PLAYER } from "../constants";
+import { API_HOST, PLAYER } from "../constants";
 
 const smallestBoard = 5
 const LargestBoard = 19
@@ -26,7 +26,7 @@ export default function Home(props: any) {
   const fetchGamesHistory = useCallback(async () => {
       try {
           const fetchedGames = await get<Game[]>(
-              "/game"
+              `${API_HOST}/game`
           )
           setHistory(fetchedGames)            
       } catch (err) {
@@ -79,7 +79,7 @@ export default function Home(props: any) {
       <Button primary onClick={ async () => {
         let gameId = gamesHistory.length+1
         try {
-          await post(`/active`, {
+          await post(`${API_HOST}/active`, {
             gameId: gameId,
             boardSize: gameChoice,
             winner: PLAYER.NONE,

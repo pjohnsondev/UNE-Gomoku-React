@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useCallback } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "../context";
-import { GAMESTATUS, PLAYER, } from "../constants";
+import { GAMESTATUS, PLAYER, API_HOST} from "../constants";
 import styles from "./Game.module.css"
 import { GameBoard } from "../components";
 import { del, get, post, put } from "../utils/http";
@@ -20,7 +20,7 @@ export default function ActiveGamePage(){
     
     const getActiveGame = useCallback(async () => {
         try {
-            const result = await get<ActiveGame>(`/active/${gameId}`)
+            const result = await get<ActiveGame>(`${API_HOST}/active/${gameId}`)
             setActiveGame(result)
         } catch (err) {
             console.log((err as Error).message)
@@ -52,8 +52,8 @@ export default function ActiveGamePage(){
     // TODO: Add delete in database to exit
     const handleExitClick = async () => {
             if(gameStatus === GAMESTATUS.COMPLETE) {
-                await del(`/active/${gameId}`)
-                await post(`/game`, {
+                await del(`${API_HOST}/active/${gameId}`)
+                await post(`${API_HOST}/game`, {
                     ...activeGame
                 })
                 navigate(`/games`);
@@ -69,7 +69,7 @@ export default function ActiveGamePage(){
             return
         } else {
             activeGame.moves.push(id)
-            const updatedGame = await put(`/active/${gameId}`, {
+            const updatedGame = await put(`${API_HOST}/active/${gameId}`, {
                 ...activeGame
             })
             setActiveGame((updatedGame as ActiveGame))
@@ -161,7 +161,7 @@ export default function ActiveGamePage(){
             return
         } else {
             activeGame.moves = []
-            await put(`/active/${activeGame._id}`, {
+            await put(`${API_HOST}/active/${activeGame._id}`, {
                 ...activeGame
             })
             clearBoard(false)
