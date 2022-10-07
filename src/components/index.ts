@@ -1,4 +1,4 @@
-export {default as Header } from "./Header"
+export {default as Header } from "./header"
 export {default as Input } from "./Input"
 export {default as GameBoard } from "./GameBoard"
 export {default as GameItem } from "./GameItem"

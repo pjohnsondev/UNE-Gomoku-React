@@ -1,7 +1,7 @@
 // Assignment 2/gomoku-react/node_modules/postcss-initial change from _ to ~
 
 import { useNavigate } from "react-router-dom"
-import styles from "./Home.module.css"
+import styles from "./home.module.css"
 import React, {useState, useCallback, useEffect, useContext } from "react" 
 import { UserContext } from "../context";
 import { Button } from 'semantic-ui-react'
